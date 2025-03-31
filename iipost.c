@@ -4,31 +4,35 @@
 #include <unistd.h>
 #include <libgen.h>
 #include <err.h>
+#include "linenoise.h"
 
 #define PATH "in"
 
 int main() {
-	char buf[BUFSIZ], *parent;
+	char cwd[BUFSIZ], prompt[BUFSIZ], *line;
 	FILE *fp;
 
 	if (access(PATH, W_OK))
 		err(1, "Missing '"PATH"' file");
 
-	getcwd(buf, sizeof buf);
-	parent = basename(buf);
+	getcwd(cwd, sizeof cwd);
+	sprintf(prompt, "%s: ", basename(cwd));
 
 	while (1) {
-		printf("%s: ", parent);
-
-		if (!fgets(buf, sizeof buf, stdin))
+		line = linenoise(prompt);
+		if (!line)
 			break;
+
+		if (!*line)
+			continue;
+
+		linenoiseHistoryAdd(line);
 
 		fp = fopen(PATH, "w");
 		if (!fp)
 			err(1, "fopen");
 
-		if (fputs(buf, fp) < 0)
-			err(1, "fputs");
+		fprintf(fp, "%s\n", line);
 
 		if (fclose(fp))
 			err(1, "fclose");		

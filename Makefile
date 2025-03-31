@@ -13,8 +13,11 @@ all: iifmt iipost
 iifmt: iifmt.c
 	$(CC) $(CFLAGS) -o $@ $^ $(CLIBS)
 
-iipost: iipost.c
+iipost: iipost.c linenoise.o
 	$(CC) $(CFLAGS) -o $@ $^ $(CLIBS)
+
+linenoise.o: linenoise.c linenoise.h
+	$(CC) -c $< -o $@
 
 %.o: %.c %.h
 	$(CC) $(CFLAGS) -c $< -o $@
