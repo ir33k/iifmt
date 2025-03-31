@@ -8,9 +8,12 @@ CLIBS =
 
 .PHONY: all
 
-all: iifmt
+all: iifmt iipost
 
 iifmt: iifmt.c
+	$(CC) $(CFLAGS) -o $@ $^ $(CLIBS)
+
+iipost: iipost.c
 	$(CC) $(CFLAGS) -o $@ $^ $(CLIBS)
 
 %.o: %.c %.h

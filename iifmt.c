@@ -1,3 +1,5 @@
+/* Format out file printing timestamp as readable data. */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
