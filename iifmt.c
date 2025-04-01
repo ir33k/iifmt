@@ -37,13 +37,13 @@ next_word(char **str)
 	if (!*word)
 		return 0;
 
-	while (**str > ' ')
+	while ((unsigned char)**str > ' ')
 		(*str)++;
 
 	if (**str) {
 		**str = 0;
 		(*str)++;
-		while (**str && **str <= ' ')
+		while (**str && (unsigned char)**str <= ' ')
 			(*str)++;
 	}
 
