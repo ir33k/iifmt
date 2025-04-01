@@ -12,8 +12,22 @@ IIMARK Space separated list of words to highlight.
 #include <time.h>
 
 #define BOLD	"\x1B[1m"	// For time
+#define DIM	"\x1B[2m"	// For server messages
 #define INVERT	"\x1B[7m"	// For mark
 #define RESET	"\x1B[0m"
+
+static int
+starts_with(char *str, char *starts)
+{
+	unsigned len;
+
+	len = strlen(starts);
+
+	if (strlen(str) < len)
+		return 0;
+
+	return !strncmp(str, starts, len);
+}
 
 static char *
 next_word(char **str)
@@ -37,7 +51,7 @@ next_word(char **str)
 }
 
 int main() {
-	char time[32], buf[BUFSIZ], *bp, *word, *env, *fmt="%H:%M", **mark;
+	char time[32], buf[BUFSIZ], *bp, *word, *env, *fmt="%H:%M", **mark=0;
 	time_t timestamp;
 	struct tm *tm;
 	int i, mn=0;
@@ -63,6 +77,13 @@ int main() {
 		timestamp = atoi(word);
 		tm = localtime(&timestamp);
 		strftime(time, sizeof time, fmt, tm);
+
+		// Server message
+		if (starts_with(bp, "-!- ")) {
+			printf(DIM"%s %s"RESET, time, bp);
+			continue;
+		}
+
 		printf(BOLD"%s"RESET, time);
 
 		while ((word = next_word(&bp))) {
