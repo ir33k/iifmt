@@ -1,4 +1,7 @@
-/* Post message to in file */
+/* Post message to IRC 'in' channel file
+
+Use linenoise readline like library for input.
+*/
 
 #include <stdio.h>
 #include <unistd.h>
@@ -19,6 +22,8 @@ int main() {
 	sprintf(prompt, "%s: ", basename(cwd));
 
 	while (1) {
+		fputs("\x1B[H" "\x1B[2J", stdout);	// Clear screen
+
 		line = linenoise(prompt);
 		if (!line)
 			break;
