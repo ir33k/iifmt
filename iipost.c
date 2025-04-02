@@ -4,6 +4,7 @@ Use linenoise readline like library for input.
 */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <libgen.h>
 #include <err.h>
@@ -20,14 +21,13 @@ int main() {
 
 	getcwd(cwd, sizeof cwd);
 	sprintf(prompt, "%s: ", basename(cwd));
+	linenoiseHistorySetMaxLen(16);
 
-	while (1) {
-		line = linenoise(prompt);
-		if (!line)
-			break;
-
-		if (!*line)
+	while ((line = linenoise(prompt))) {
+		if (!*line) {
+			free(line);
 			continue;
+		}
 
 		linenoiseHistoryAdd(line);
 
@@ -36,6 +36,8 @@ int main() {
 			err(1, "fopen");
 
 		fprintf(fp, "%s\n", line);
+
+		free(line);
 
 		if (fclose(fp))
 			err(1, "fclose");		
