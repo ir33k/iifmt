@@ -16,6 +16,9 @@ IIMARK Space separated list of words to highlight.
 #define INVERT	"\x1B[7m"
 #define RESET	"\x1B[0m"
 
+static int starts_with(char *str, char *starts);
+static char *next_word(char **str);
+
 static int
 starts_with(char *str, char *starts)
 {
