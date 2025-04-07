@@ -109,6 +109,12 @@ int main() {
 			if (maxw > 0 && w > maxw) {
 				printf("\n");
 				w = len;
+
+				// Add indentation for wrapped line
+				len = strlen(time) +1;
+				w += len;
+				for (j=0; j<len; j++)
+					printf(" ");
 			} else {
 				printf(" ");
 			}
