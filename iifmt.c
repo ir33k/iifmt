@@ -4,6 +4,7 @@ Environment variables:
 
 IIFMT String in strftime(3) formant used to print message timestamp.
 IIMARK Space separated list of words to highlight.
+IIMAXW Number of columns before line wrap, default to 80, -1 to disable.
 */
 
 #include <stdio.h>
@@ -54,10 +55,16 @@ next_word(char **str)
 }
 
 int main() {
-	char time[32], buf[BUFSIZ], *bp, *word, *env, *fmt="%H:%M", **mark=0;
+	char time[32], buf[BUFSIZ], *bp, *word, *env, *fmt, **mark;
 	time_t timestamp;
 	struct tm *tm;
-	int i, j, mn=0;
+	int i, j, mn, len, w, maxw;
+
+	fmt = "%H:%M";
+	mark = 0;
+	mn = 0;
+	w = 0;
+	maxw = 80;
 
 	if ((env = getenv("IIFMT")))
 		fmt = env;
@@ -75,6 +82,9 @@ int main() {
 			mark[i++] = word;
 	}
 
+	if ((env = getenv("IIMAXW")))
+		maxw = atoi(env);
+
 	while ((bp = fgets(buf, sizeof buf, stdin))) {
 		word = next_word(&bp);
 		timestamp = atoi(word);
@@ -89,16 +99,27 @@ int main() {
 
 		printf(DIM"%s"RESET, time);
 
+		len = strlen(time);
+		w = len;
+
 		for (i=0; (word = next_word(&bp)); i++) {
-			printf(" ");
+			len = strlen(word);
+			w += len +1;	// +1 for space
+
+			if (maxw > 0 && w > maxw) {
+				printf("\n");
+				w = len;
+			} else {
+				printf(" ");
+			}
 
 			for (j=0; j<mn; j++)
 				if (!strcmp(mark[j], word))
 					break;
 
-			if (j<mn)
+			if (j<mn)	// Mark
 				printf(INVERT"%s"RESET, word);
-			else if (i == 0)
+			else if (i == 0)	// Author
 				printf(BOLD"%s"RESET, word);
 			else
 				printf("%s", word);
